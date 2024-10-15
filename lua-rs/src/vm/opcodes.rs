@@ -1,5 +1,16 @@
+#[derive(Debug, Clone, Copy)]
+pub struct OpCode {
+    test_flag: u8,           // operator is a test (next instruction must be a jump)
+    set_a_flag: u8,          // instruction set register A
+    pub arg_b_mode: ArgKind, //B arg mode
+    pub arg_c_mode: ArgKind, // C arg mode
+    pub op_mode: OpMode,     // op mode
+    pub name: &'static str,
+}
+
 #[allow(clippy::upper_case_acronyms)]
-enum OpMode {
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum OpMode {
     IABC = 0,
     IABx,
     IAsBx,
@@ -7,6 +18,7 @@ enum OpMode {
 }
 
 #[allow(clippy::enum_variant_names)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum Ops {
     OpMove = 0,
     OpLoadk,
@@ -57,23 +69,15 @@ enum Ops {
     OpExtraarg,
 }
 
-enum ArgKind {
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ArgKind {
     OpArgN = 0, // argument is not used
     OpArgU,     // argument is used
     OpArgR,     // argument is a register or a jump offset
     OpArgK,     // argument is a constant or register/constant
 }
 
-pub struct OpCode {
-    test_flag: u8,       // operator is a test (next instruction must be a jump)
-    set_a_flag: u8,      // instruction set register A
-    arg_b_mode: ArgKind, //B arg mode
-    arg_c_mode: ArgKind, // C arg mode
-    op_mode: OpMode,     // op mode
-    name: &'static str,
-}
-
-const OPCODES: [OpCode; 47] = [
+pub const OPCODES: [OpCode; 47] = [
     OpCode {
         test_flag: 0,
         set_a_flag: 1,

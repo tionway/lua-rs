@@ -1,8 +1,7 @@
 [workspace]
 
 members = [
-    "binchunk",
-    "vm",
+    "lua-rs",
 ]
 
 resolver = "2"

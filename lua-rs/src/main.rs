@@ -1,6 +1,8 @@
 use binchunk::{Constant, Prototype};
+use vm::{instructions::Instruction, opcodes::ArgKind};
 
 pub mod binchunk;
+pub mod vm;
 
 fn main() -> std::io::Result<()> {
     let args = std::env::args().collect::<Vec<_>>();
@@ -67,7 +69,49 @@ fn print_code(proto: &Prototype) {
         if !proto.line_info.is_empty() {
             line = format!("{}", proto.line_info[index]);
         }
-        println!("\t{}\t[{}]\t0x{:08X}", index + 1, line, c);
+        let i = Instruction::new(*c);
+        print!("\t{}\t[{}]\t{} \t", index + 1, line, i.opname());
+        print_operands(i);
+        println!();
+    }
+}
+
+fn print_operands(i: Instruction) {
+    match i.opmode() {
+        vm::opcodes::OpMode::IABC => {
+            let (a, b, c) = i.ABC();
+            print!("{}", a);
+            if i.b_mode() != ArgKind::OpArgN {
+                if b > 0xFF {
+                    print!(" {}", -1 - (b & 0xFF) as i32);
+                } else {
+                    print!(" {}", b);
+                }
+            }
+            if i.c_mode() != ArgKind::OpArgN {
+                if c > 0xFF {
+                    print!(" {}", -1 - (c & 0xFF) as i32);
+                } else {
+                    print!(" {}", c);
+                }
+            }
+        }
+        vm::opcodes::OpMode::IABx => {
+            let (a, bx) = i.ABx();
+            print!("{}", a);
+            if i.b_mode() == ArgKind::OpArgK {
+                print!(" {}", -1 - bx as i32);
+            } else if i.b_mode() == ArgKind::OpArgU {
+                print!(" {}", bx);
+            }
+        }
+        vm::opcodes::OpMode::IAsBx => {
+            let (a, s_bx) = i.AsBx();
+            print!("{} {}", a, s_bx);
+        }
+        vm::opcodes::OpMode::IAx => {
+            print!("{}", -1 - i.Ax() as i32);
+        }
     }
 }
 
