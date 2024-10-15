@@ -1,0 +1,8 @@
+[workspace]
+
+members = [
+    "binchunk",
+    "vm",
+]
+
+resolver = "2"
