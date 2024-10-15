@@ -1,5 +1,3 @@
-use std::io;
-
 use binchunk::{Constant, Prototype};
 
 pub mod binchunk;
