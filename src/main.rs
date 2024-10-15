@@ -1,15 +1,13 @@
-use binchunk::{Constant, Prototype};
-use vm::{instructions::Instruction, opcodes::ArgKind};
-
-pub mod binchunk;
-pub mod vm;
+use lua_rs::chunk::{self, Constant, Prototype};
+use lua_rs::vm_instructions;
+use lua_rs::vm_instructions::{instructions::Instruction, opcodes::ArgKind};
 
 fn main() -> std::io::Result<()> {
     let args = std::env::args().collect::<Vec<_>>();
 
     if args.len() > 1 {
         let data = std::fs::read(&args[1])?;
-        let proto = match binchunk::un_dump(&data) {
+        let proto = match chunk::un_dump(&data) {
             Some(p) => p,
             None => {
                 println!("Fail to parse lua chunk binary.");
@@ -78,7 +76,7 @@ fn print_code(proto: &Prototype) {
 
 fn print_operands(i: Instruction) {
     match i.opmode() {
-        vm::opcodes::OpMode::IABC => {
+        vm_instructions::opcodes::OpMode::IABC => {
             let (a, b, c) = i.ABC();
             print!("{}", a);
             if i.b_mode() != ArgKind::OpArgN {
@@ -96,7 +94,7 @@ fn print_operands(i: Instruction) {
                 }
             }
         }
-        vm::opcodes::OpMode::IABx => {
+        vm_instructions::opcodes::OpMode::IABx => {
             let (a, bx) = i.ABx();
             print!("{}", a);
             if i.b_mode() == ArgKind::OpArgK {
@@ -105,11 +103,11 @@ fn print_operands(i: Instruction) {
                 print!(" {}", bx);
             }
         }
-        vm::opcodes::OpMode::IAsBx => {
+        vm_instructions::opcodes::OpMode::IAsBx => {
             let (a, s_bx) = i.AsBx();
             print!("{} {}", a, s_bx);
         }
-        vm::opcodes::OpMode::IAx => {
+        vm_instructions::opcodes::OpMode::IAx => {
             print!("{}", -1 - i.Ax() as i32);
         }
     }

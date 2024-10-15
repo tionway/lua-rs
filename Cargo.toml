@@ -1,7 +1,7 @@
-[workspace]
+[package]
+name = "lua-rs"
+version = "0.1.0"
+edition = "2021"
 
-members = [
-    "lua-rs",
-]
+[dependencies]
 
-resolver = "2"
